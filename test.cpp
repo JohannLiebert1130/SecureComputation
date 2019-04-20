@@ -24,16 +24,21 @@ private:
     }
 };
 
-void initVector(vector<long>& v)
+void InitVector(vector<long>& v)
 {
-  for(int i = 0; i < v.size(); i++)
-    v[i] = rand() % 2;
+    for(int i = 0; i < v.size(); i++)
+        v[i] = rand() % 2;
 }
 
-
+void PrintVector(const vector<long>& v)
+{
+    for(int i = 0; i < v.size(); i++)
+        cout << v[i];
+    cout << endl;
+}
 int main()
 {
-  long m = 0;                   // Specific modulus
+    long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
 	long L = 420;                 // Number of levels in the modulus chain [default=heuristic]
@@ -41,7 +46,7 @@ int main()
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
 	long k = 80;                  // Security parameter [default=80] 
-  long s = 1024;                   // Minimum number of slots [default=0]
+    long s = 1024;                   // Minimum number of slots [default=0]
 
     
     m = FindM(k, L, c, p, d, s, 0);
@@ -64,10 +69,13 @@ int main()
     cout << "m: " << m << endl;
     cout << "nslots: " << ea.size() << endl;   
 
-    int num = 1024;
+    int num = 64;
     vector<long> v1(num), v2(num);
-    initVector(v1);
-    initVector(v2);
+    InitVector(v1);
+    InitVector(v2);
+    PrintVector(v1);
+    PrintVector(v2);
+
     v1.resize(ea.size());
     v2.resize(ea.size());
     Ctxt encV1(publicKey), encV2(publicKey);
@@ -81,11 +89,11 @@ int main()
     timer.stop();
     std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
 
-    // vector<long> result;
-    // ea.decrypt(encV1, secretKey, result);
-    // for(int i = 0; i < num; i++)
-    //   cout << result[i] << ' ';
-    // cout << endl;
+    vector<long> result;
+    ea.decrypt(encV1, secretKey, result);
+    result.resize(num);
+    PrintVector(result);
 
     return 0;
 }
+
