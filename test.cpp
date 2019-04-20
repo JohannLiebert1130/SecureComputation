@@ -69,7 +69,7 @@ int main()
     cout << "m: " << m << endl;
     cout << "nslots: " << ea.size() << endl;   
 
-    int num = 64;
+    int num = 8;
     vector<long> v1(num), v2(num);
     InitVector(v1);
     InitVector(v2);
@@ -85,7 +85,7 @@ int main()
     CombGate cb(num);
     Timer timer;
     timer.start();
-    cb.KSAdder(encV1, encV2);
+    cb.KSAdder(encV1, encV2, "substract");
     timer.stop();
     std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
 

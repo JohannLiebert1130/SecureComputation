@@ -1,6 +1,7 @@
 #include "basicGate.h"
 #include "EncryptedArray.h"
 #include <string>
+#include <cmath>
 using namespace std;
 using BG = BasicGate;
 
@@ -11,11 +12,21 @@ private:
 
 public:
   CombGate(int size) : _size(size){}
-  void KSAdder(Ctxt &a, Ctxt &b)
+  void KSAdder(Ctxt &a, Ctxt &b, string op="add")
   {
     Ctxt p(a), g(a);
-    BG::XOR(p, b);
-    BG::AND(g, b);
+    if(op=="substract")
+    {
+      Ctxt notB = b;
+      BG::NOT(notB);
+      BG::XOR(p, notB);
+      BG::AND(g, notB);
+    }
+    else
+    {
+      BG::XOR(p, b);
+      BG::AND(g, b);
+    }
     Ctxt s = p;
 
     EncryptedArray ea(p.getContext());
@@ -33,7 +44,15 @@ public:
     }
 
     ea.shift(g, -1);
-    
+    if(op=="substract")
+    {
+      vector<long> mask(ea.size(), 0);
+      Ctxt encMask(p.getPubKey());
+      mask[_size-1] = 1;
+      ea.encrypt(encMask, p.getPubKey(), mask);
+      BG::OR(g, encMask);
+    }
+      
     BG::XOR(s, g);
     a = s;
   }
