@@ -3,25 +3,20 @@ using namespace NTL;
 
 class BasicGate
 {
-private:
-    Ctxt _v_ones;
-
 public:
-    BasicGate(Ctxt v_ones) : _v_ones(v_ones){}
-
-    void AND(Ctxt &c1, Ctxt &c2)
+    static void AND(Ctxt &c1, Ctxt &c2)
     {
         c1.multiplyBy(c2);
     }
-    void XOR(Ctxt &c1, Ctxt &c2)
+    static void XOR(Ctxt &c1, Ctxt &c2)
     {
         c1 += c2;
     }
-    void NOT(Ctxt &c)
+    static void NOT(Ctxt &c)
     {
-        c += _v_ones;
+        c.addConstant(to_ZZX(1));
     }
-    void OR(Ctxt &c1, Ctxt &c2)
+    static void OR(Ctxt &c1, Ctxt &c2)
     {
         NOT(c1);
         

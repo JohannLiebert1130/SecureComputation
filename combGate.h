@@ -1,21 +1,20 @@
 #include "basicGate.h"
 #include "EncryptedArray.h"
 using namespace std;
+using BG = BasicGate;
 
 class CombGate
 {
 private:
-    BasicGate _bg;
     int _size;
 
 public:
-    //CombGate(Ctxt v_ones, int size) : _bg(BasicGate(v_ones)), _size(size){}
-    CombGate(Ctxt v_ones, int size) : _bg(BasicGate(v_ones)), _size(size){}
+    CombGate(int size) : _size(size){}
     void KSAdder(Ctxt &a, Ctxt &b)
     {
       Ctxt p(a), g(a);
-      _bg.XOR(p, b);
-      _bg.AND(g, b);
+      BG::XOR(p, b);
+      BG::AND(g, b);
       Ctxt s = p;
 
 
@@ -28,14 +27,14 @@ public:
         ea.shift(p_, -(int)pow(2, i));
         ea.shift(g_, -(int)pow(2, i));
         
-        _bg.AND(g_, p);
-        _bg.OR(g, g_);
-        _bg.AND(p, p_);
+        BG::AND(g_, p);
+        BG::OR(g, g_);
+        BG::AND(p, p_);
       }
 
       
       ea.shift(g, -1);
-      _bg.XOR(s, g);
+      BG::XOR(s, g);
       a = s;
     }
     

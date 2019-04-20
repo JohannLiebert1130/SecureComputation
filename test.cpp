@@ -36,7 +36,7 @@ int main()
   long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 400;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 420;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
@@ -74,24 +74,18 @@ int main()
     ea.encrypt(encV1, publicKey, v1);
     ea.encrypt(encV2, publicKey, v2);
 
-    vector<long> ones(ea.size(), 1);
-
-    Ctxt encOnes(publicKey);
-    ea.encrypt(encOnes, publicKey, ones);
-    
-
-    CombGate cb(encOnes, num);
+    CombGate cb(num);
     Timer timer;
     timer.start();
     cb.KSAdder(encV1, encV2);
     timer.stop();
     std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
 
-    vector<long> result;
-    ea.decrypt(encV1, secretKey, result);
-    for(int i = 0; i < num; i++)
-      cout << result[i] << ' ';
-    cout << endl;
+    // vector<long> result;
+    // ea.decrypt(encV1, secretKey, result);
+    // for(int i = 0; i < num; i++)
+    //   cout << result[i] << ' ';
+    // cout << endl;
 
     return 0;
 }
