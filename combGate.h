@@ -32,7 +32,8 @@ public:
     EncryptedArray ea(p.getContext());
     Ctxt p_(p.getPubKey()), g_(p.getPubKey());
 
-    for(int i = 0; i < (int)ceil(log(_size)); i++)
+    cout << log(_size)/log(2) << endl;
+    for(int i = 0; i < (int)ceil(log(_size)/log(2)); i++)
     {
       p_ = p, g_ = g;
       ea.shift(p_, -(int)pow(2, i));
