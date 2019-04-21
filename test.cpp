@@ -41,7 +41,7 @@ int main()
     long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 420;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 450;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
@@ -69,7 +69,7 @@ int main()
     cout << "m: " << m << endl;
     cout << "nslots: " << ea.size() << endl;   
 
-    int num = 8;
+    int num = 1024;
     vector<long> v1(num), v2(num);
     InitVector(v1);
     InitVector(v2);
@@ -85,12 +85,12 @@ int main()
     CombGate cb(num);
     Timer timer;
     timer.start();
-    cb.KSAdder(encV1, encV2, "substract");
+    Ctxt total = cb.KSAdder(encV1, encV2);
     timer.stop();
     std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
 
     vector<long> result;
-    ea.decrypt(encV1, secretKey, result);
+    ea.decrypt(total, secretKey, result);
     result.resize(num);
     PrintVector(result);
 

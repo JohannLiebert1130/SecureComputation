@@ -12,7 +12,7 @@ private:
 
 public:
   CombGate(int size) : _size(size){}
-  void KSAdder(Ctxt &a, Ctxt &b, string op="add")
+  Ctxt KSAdder(Ctxt &a, Ctxt &b, string op="add")
   {
     Ctxt p(a), g(a);
     if(op=="substract")
@@ -55,6 +55,6 @@ public:
     }
       
     BG::XOR(s, g);
-    a = s;
+    return s;
   }
 };
