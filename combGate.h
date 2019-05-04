@@ -1,5 +1,6 @@
 #include "basicGate.h"
 #include "EncryptedArray.h"
+#include "replicate.h"
 #include <string>
 #include <cmath>
 using namespace std;
@@ -56,5 +57,25 @@ public:
       
     BG::XOR(s, g);
     return s;
+  }
+
+
+  Ctxt Multiply(Ctxt &a, Ctxt &b)
+  {
+    EncryptedArray ea(a.getContext());
+    Ctxt result(a.getPubKey()), tempA(a.getPubKey()), b_i(b.getPubKey());
+
+
+    for(int i= 0; i < _size - 1; i++)
+    {
+      tempA = a;
+      b_i = b;
+      replicate(ea, b_i, i);
+      tempA.multiplyBy(b_i);
+      ea.shift(tempA, -(_size - i - 1));
+      result = KSAdder(result, tempA);
+    }
+
+    return result;
   }
 };

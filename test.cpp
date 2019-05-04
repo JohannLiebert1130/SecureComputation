@@ -41,7 +41,7 @@ int main()
     long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 450;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 650;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
@@ -69,7 +69,7 @@ int main()
     cout << "m: " << m << endl;
     cout << "nslots: " << ea.size() << endl;   
 
-    int num = 1024;
+    int num = 4;
     vector<long> v1(num), v2(num);
     InitVector(v1);
     InitVector(v2);
@@ -94,6 +94,15 @@ int main()
     result.resize(num);
     PrintVector(result);
 
+    result.resize(ea.size());
+    Timer timer2;
+    timer2.start();
+    Ctxt enc = cb.Multiply(encV1, encV2);
+    timer2.stop();
+    std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
+    ea.decrypt(enc, secretKey, result);
+    result.resize(num);
+    PrintVector(result);
+
     return 0;
 }
-
