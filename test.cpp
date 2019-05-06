@@ -1,6 +1,6 @@
 #include <iostream>
 #include <ctime>
-#include<sys/time.h>
+#include <sys/time.h>
 #include "combGate.h"
 using namespace std;
 
@@ -41,7 +41,7 @@ int main()
     long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 650;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 850;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
@@ -82,27 +82,45 @@ int main()
     ea.encrypt(encV1, publicKey, v1);
     ea.encrypt(encV2, publicKey, v2);
 
-    CombGate cb(num);
-    Timer timer;
-    timer.start();
-    Ctxt total = cb.KSAdder(encV1, encV2);
-    timer.stop();
-    std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
+    vector<long> vOnes(ea.size(), 0);
+    vector<long> vZeros(ea.size(), 0);
+    vOnes[num - 1] = 1;
+    Ctxt encZeros(publicKey), encOnes(publicKey);
+    ea.encrypt(encZeros, publicKey, vZeros);
+    ea.encrypt(encOnes, publicKey, vOnes);
+     
+    CombGate cb(num, encZeros, encOnes);
+    // Timer timer;
+    // timer.start();
+    // Ctxt total = cb.KSAdder(encV1, encV2);
+    // timer.stop();
+    // std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
 
     vector<long> result;
-    ea.decrypt(total, secretKey, result);
-    result.resize(num);
-    PrintVector(result);
+    // ea.decrypt(total, secretKey, result);
+    // result.resize(num);
+    // PrintVector(result);
+
+    // result.resize(ea.size());
+    // Timer timer2;
+    // timer2.start();
+    // Ctxt enc = cb.Multiply(encV1, encV2);
+    // timer2.stop();
+    // std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
+    // ea.decrypt(enc, secretKey, result);
+    // result.resize(num);
+    // PrintVector(result);
 
     result.resize(ea.size());
-    Timer timer2;
-    timer2.start();
-    Ctxt enc = cb.Multiply(encV1, encV2);
-    timer2.stop();
-    std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
-    ea.decrypt(enc, secretKey, result);
+    Ctxt remainder(publicKey), quotient(publicKey);
+    Timer timer3;
+    timer3.start();
+    cb.Divide(encV1, encV2, remainder, quotient);
+    timer3.stop();
+    std::cout << "Time taken: " << timer3.elapsed_time() << std::endl;
+    ea.decrypt(quotient, secretKey, result);
     result.resize(num);
     PrintVector(result);
-
+ 
     return 0;
 }
