@@ -6,23 +6,23 @@ using namespace std;
 
 
 // Simple class to measure time for each method
-class Timer
-{
-public:
-    void start() { m_start = my_clock(); }
-    void stop() { m_stop = my_clock(); }
-    double elapsed_time() const {
-        return m_stop - m_start;
-    }
+// class Timer
+// {
+// public:
+//     void start() { m_start = my_clock(); }
+//     void stop() { m_stop = my_clock(); }
+//     double elapsed_time() const {
+//         return m_stop - m_start;
+//     }
 
-private:
-    double m_start, m_stop;
-    double my_clock() const {
-        struct timeval tv;
-        gettimeofday(&tv, NULL);
-        return tv.tv_sec + tv.tv_usec * 1e-6;
-    }
-};
+// private:
+//     double m_start, m_stop;
+//     double my_clock() const {
+//         struct timeval tv;
+//         gettimeofday(&tv, NULL);
+//         return tv.tv_sec + tv.tv_usec * 1e-6;
+//     }
+// };
 
 void InitVector(vector<long>& v)
 {
@@ -41,7 +41,7 @@ int main()
     long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 1000;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 800;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
@@ -56,12 +56,12 @@ int main()
 	buildModChain(context, L, c);             // Modify the context, adding primes to the modulus chain
 	std::cout << "OK!" << std::endl;
     cout<<"securitylevel="<<context.securityLevel()<<endl;
-
+ 
 	std::cout << "Generating keys... " << std::flush;
 	FHESecKey secretKey(context);                    // Construct a secret key structure
 	const FHEPubKey& publicKey = secretKey;                 // An "upcast": FHESecKey is a subclass of FHEPubKey
 	secretKey.GenSecKey(w);                          // Actually generate a secret key with Hamming weight
-	//addSome1DMatrices(secretKey);                    // Extra information for relinearization
+	addSome1DMatrices(secretKey);                    // Extra information for relinearization
 
     ZZX G =  context.alMod.getFactorsOverZZ()[0]; 
     EncryptedArray ea(context, G);

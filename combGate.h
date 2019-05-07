@@ -5,7 +5,23 @@
 #include <cmath>
 using namespace std;
 using BG = BasicGate;
+class Timer
+{
+public:
+    void start() { m_start = my_clock(); }
+    void stop() { m_stop = my_clock(); }
+    double elapsed_time() const {
+        return m_stop - m_start;
+    }
 
+private:
+    double m_start, m_stop;
+    double my_clock() const {
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        return tv.tv_sec + tv.tv_usec * 1e-6;
+    }
+};
 class CombGate
 {
 private:
@@ -80,10 +96,40 @@ public:
     }
   }
 
+  // Ctxt Multiply2(Ctxt &a, Ctxt &b)
+  // {
+  //   EncryptedArray ea(a.getContext());
+  //   Ctxt result(a.getPubKey()), tempA(a.getPubKey()), b_i(b.getPubKey());
+
+  //   vector<Ctxt> middleSums(_size);
+  //   for(int i= 0; i < _size; i++)
+  //   {
+  //     middleSums[i] = a;
+  //     b_i = b;
+  //     replicate(ea, b_i, i);
+  //     middleSums[i].multiplyBy(b_i);
+  //     ea.shift(middleSums[i], -(_size - i - 1));
+  //   }
+
+  //   int level = log(_size)/log(2), db = 1;
+  //   while(level > 0)
+  //   {
+  //     for(int i = 0; i < _size/(2*db); i++)
+  //     {
+  //       temp[2*i*db] = KSAdder(temp[2*i*db] + temp[(2*i+1)*db]);
+  //     }
+  //     db *= 2, level--;
+  //   }
+
+  // }
   Ctxt Cond1(Ctxt b, Ctxt neg_b, Ctxt sign)
   {
     Ctxt part1 = b, part2 = neg_b;
+    Timer m;
+    m.start();
     part1.multiplyBy(sign);
+    m.stop();
+    std::cout << "Time taken for multiply: " << m.elapsed_time() << std::endl;
     BG::NOT(sign);
     part2.multiplyBy(sign);
     Ctxt result = part1;
@@ -103,22 +149,38 @@ public:
 
   void Divide(Ctxt &a, Ctxt &b, Ctxt& r, Ctxt& q)
   {
+    Timer timer1;
+    timer1.start();
     Ctxt neg_b = b;
     BG::NOT(neg_b);
 
     EncryptedArray ea(a.getContext());
     Ctxt ai = a, bi = b;
+    timer1.stop();
+    std::cout << "Time taken: " << timer1.elapsed_time() << std::endl;
 
+    Timer timer2;
+    timer2.start();
     replicate(ea, ai, 0);
     replicate(ea, bi, 0);
+    timer2.stop();
+    std::cout << "Time taken for replicate: " << timer2.elapsed_time() << std::endl;
+
+    Timer timer3;
+    timer3.start();
     ai += bi;
     cout << "yes1" << endl;
     r = a;
     r = KSAdder(r, Cond1(b, neg_b, ai));
         cout << "yes2" << endl;
 
+    timer3.stop();
+    std::cout << "Time taken for middle add: " << timer3.elapsed_time() << std::endl;
+
     for(int i = 0; i < _size - 1; i++)
     {
+      Timer timer;
+    timer.start();
       ai = r, bi = b;
       replicate(ea, ai, 0);
       replicate(ea, bi, 0);
@@ -135,6 +197,9 @@ public:
        cout << "yes6" << endl;
       r = KSAdder(r, Cond1(b, neg_b, ai));
        cout << "yes7" << endl;
+
+       timer.stop();
+    std::cout << "Time taken for  loop: " << timer.elapsed_time() << std::endl;
     }
      
 
