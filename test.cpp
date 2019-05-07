@@ -41,12 +41,12 @@ int main()
     long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 850;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 1000;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
 	long k = 80;                  // Security parameter [default=80] 
-    long s = 1024;                   // Minimum number of slots [default=0]
+    long s = 0;                   // Minimum number of slots [default=0]
 
     
     m = FindM(k, L, c, p, d, s, 0);
@@ -61,7 +61,7 @@ int main()
 	FHESecKey secretKey(context);                    // Construct a secret key structure
 	const FHEPubKey& publicKey = secretKey;                 // An "upcast": FHESecKey is a subclass of FHEPubKey
 	secretKey.GenSecKey(w);                          // Actually generate a secret key with Hamming weight
-	addSome1DMatrices(secretKey);                    // Extra information for relinearization
+	//addSome1DMatrices(secretKey);                    // Extra information for relinearization
 
     ZZX G =  context.alMod.getFactorsOverZZ()[0]; 
     EncryptedArray ea(context, G);
