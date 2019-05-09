@@ -107,14 +107,14 @@ public:
     for(int i= 0; i < _size; i++)
     {
       b_i = b;
+      Timer timer1;
+      timer1.start();
       replicate(ea, b_i, i);
+      timer1.stop();
+      std::cout << "Time taken for replicate: " << timer1.elapsed_time() << std::endl;
+
       middleSums[i].multiplyBy(b_i);
       ea.shift(middleSums[i], -(_size - i - 1));
-
-      ea.decrypt(middleSums[i], secretKey, plain);
-      for(int i = 0; i < 4; i++)
-        cout << plain[i];
-      cout << endl;
     }
 
     int level = log(_size)/log(2), db = 1;
@@ -123,7 +123,11 @@ public:
     {
       for(int i = 0; i < _size/(2*db); i++)
       {
+        Timer timer;
+        timer.start();
         middleSums[2*i*db] = KSAdder(middleSums[2*i*db], middleSums[(2*i+1)*db]);
+        timer.stop();
+        std::cout << "Time taken for ksadder: " << timer.elapsed_time() << std::endl;
       }
       db *= 2, level--;
     }
