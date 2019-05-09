@@ -56,7 +56,7 @@ int main()
 	buildModChain(context, L, c);             // Modify the context, adding primes to the modulus chain
 	std::cout << "OK!" << std::endl;
     cout<<"securitylevel="<<context.securityLevel()<<endl;
- 
+
 	std::cout << "Generating keys... " << std::flush;
 	FHESecKey secretKey(context);                    // Construct a secret key structure
 	const FHEPubKey& publicKey = secretKey;                 // An "upcast": FHESecKey is a subclass of FHEPubKey
@@ -90,26 +90,38 @@ int main()
     ea.encrypt(encOnes, publicKey, vOnes);
      
     CombGate cb(num, encZeros, encOnes);
-    // Timer timer;
-    // timer.start();
-    // Ctxt total = cb.KSAdder(encV1, encV2);
-    // timer.stop();
-    // std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
+    vector<long> result(ea.size());
 
-    vector<long> result;
-    // ea.decrypt(total, secretKey, result);
-    // result.resize(num);
-    // PrintVector(result);
+    Timer timer;
+    timer.start();
+    Ctxt total = cb.KSAdder(encV1, encV2);
+    timer.stop();
+    std::cout << "Time taken: " << timer.elapsed_time() << std::endl;
+    ea.decrypt(total, secretKey, result);
+    result.resize(num);
+    PrintVector(result);
 
-    // result.resize(ea.size());
-    // Timer timer2;
-    // timer2.start();
-    // Ctxt enc = cb.Multiply(encV1, encV2);
-    // timer2.stop();
-    // std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
-    // ea.decrypt(enc, secretKey, result);
-    // result.resize(num);
-    // PrintVector(result);
+    result.resize(ea.size());
+    Timer timer2;
+    timer2.start();
+    Ctxt enc = cb.Multiply(encV1, encV2);
+    timer2.stop();
+    std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
+    ea.decrypt(enc, secretKey, result);
+    cout << "ok" << endl; 
+    result.resize(num);
+    PrintVector(result);
+
+
+    result.resize(ea.size());
+    Timer timer4;
+    timer4.start();
+    enc = cb.Multiply2(encV1, encV2);
+    timer4.stop();
+    std::cout << "Time taken: " << timer4.elapsed_time() << std::endl;
+    ea.decrypt(enc, secretKey, result);
+    result.resize(num);
+    PrintVector(result);
 
     result.resize(ea.size());
     Ctxt remainder(publicKey), quotient(publicKey);

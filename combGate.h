@@ -94,34 +94,34 @@ public:
       ea.shift(tempA, -(_size - i - 1));
       result = KSAdder(result, tempA);
     }
+    return result;
   }
 
-  // Ctxt Multiply2(Ctxt &a, Ctxt &b)
-  // {
-  //   EncryptedArray ea(a.getContext());
-  //   Ctxt result(a.getPubKey()), tempA(a.getPubKey()), b_i(b.getPubKey());
+  Ctxt Multiply2(Ctxt &a, Ctxt &b)
+  {
+    EncryptedArray ea(a.getContext());
+    Ctxt result(a.getPubKey()), tempA(a.getPubKey()), b_i(b.getPubKey());
 
-  //   vector<Ctxt> middleSums(_size);
-  //   for(int i= 0; i < _size; i++)
-  //   {
-  //     middleSums[i] = a;
-  //     b_i = b;
-  //     replicate(ea, b_i, i);
-  //     middleSums[i].multiplyBy(b_i);
-  //     ea.shift(middleSums[i], -(_size - i - 1));
-  //   }
+    vector<Ctxt> middleSums(_size, a);
+    for(int i= 0; i < _size; i++)
+    {
+      b_i = b;
+      replicate(ea, b_i, i);
+      middleSums[i].multiplyBy(b_i);
+      ea.shift(middleSums[i], -(_size - i - 1));
+    }
 
-  //   int level = log(_size)/log(2), db = 1;
-  //   while(level > 0)
-  //   {
-  //     for(int i = 0; i < _size/(2*db); i++)
-  //     {
-  //       temp[2*i*db] = KSAdder(temp[2*i*db] + temp[(2*i+1)*db]);
-  //     }
-  //     db *= 2, level--;
-  //   }
-
-  // }
+    int level = log(_size)/log(2), db = 1;
+    while(level > 0)
+    {
+      for(int i = 0; i < _size/(2*db); i++)
+      {
+        middleSums[2*i*db] = KSAdder(middleSums[2*i*db], middleSums[(2*i+1)*db]);
+      }
+      db *= 2, level--;
+    }
+    return result;
+  }
   Ctxt Cond1(Ctxt b, Ctxt neg_b, Ctxt sign)
   {
     Ctxt part1 = b, part2 = neg_b;
@@ -153,6 +153,7 @@ public:
     timer1.start();
     Ctxt neg_b = b;
     BG::NOT(neg_b);
+    neg_b = KSAdder(neg_b, encOnes);
 
     EncryptedArray ea(a.getContext());
     Ctxt ai = a, bi = b;
@@ -169,7 +170,6 @@ public:
     Timer timer3;
     timer3.start();
     ai += bi;
-    cout << "yes1" << endl;
     r = a;
     r = KSAdder(r, Cond1(b, neg_b, ai));
         cout << "yes2" << endl;
@@ -180,26 +180,21 @@ public:
     for(int i = 0; i < _size - 1; i++)
     {
       Timer timer;
-    timer.start();
+      timer.start();
       ai = r, bi = b;
       replicate(ea, ai, 0);
       replicate(ea, bi, 0);
-          cout << "yes3" << endl;
-
       ai.addCtxt(bi);
-            cout << "yes4" << endl;
-
       q.addCtxt(Cond2(ai));
-            cout << "yes5" << endl;
 
       ea.shift(r, -1);
       ea.shift(q, -1);
-       cout << "yes6" << endl;
+      cout << "yes6" << endl;
       r = KSAdder(r, Cond1(b, neg_b, ai));
-       cout << "yes7" << endl;
+      cout << "yes7" << endl;
 
-       timer.stop();
-    std::cout << "Time taken for  loop: " << timer.elapsed_time() << std::endl;
+      timer.stop();
+      std::cout << "Time taken for  loop: " << timer.elapsed_time() << std::endl;
     }
      
 
