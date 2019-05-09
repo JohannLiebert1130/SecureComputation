@@ -97,21 +97,28 @@ public:
     return result;
   }
 
-  Ctxt Multiply2(Ctxt &a, Ctxt &b)
+  Ctxt Multiply2(Ctxt &a, Ctxt &b, FHESecKey secretKey)
   {
     EncryptedArray ea(a.getContext());
-    Ctxt result(a.getPubKey()), tempA(a.getPubKey()), b_i(b.getPubKey());
+    Ctxt tempA(a.getPubKey()), b_i(b.getPubKey());
 
     vector<Ctxt> middleSums(_size, a);
+    vector<long> plain(ea.size());
     for(int i= 0; i < _size; i++)
     {
       b_i = b;
       replicate(ea, b_i, i);
       middleSums[i].multiplyBy(b_i);
       ea.shift(middleSums[i], -(_size - i - 1));
+
+      ea.decrypt(middleSums[i], secretKey, plain);
+      for(int i = 0; i < 4; i++)
+        cout << plain[i];
+      cout << endl;
     }
 
     int level = log(_size)/log(2), db = 1;
+    cout << "level:" << level << endl;
     while(level > 0)
     {
       for(int i = 0; i < _size/(2*db); i++)
@@ -120,7 +127,7 @@ public:
       }
       db *= 2, level--;
     }
-    return result;
+    return middleSums[0];
   }
   Ctxt Cond1(Ctxt b, Ctxt neg_b, Ctxt sign)
   {

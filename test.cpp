@@ -41,7 +41,7 @@ int main()
     long m = 0;                   // Specific modulus
 	long p = 2;                   // Plaintext base [default=2], should be a prime number
 	long r = 1;                   // Lifting [default=1]
-	long L = 800;                 // Number of levels in the modulus chain [default=heuristic]
+	long L = 1000;                 // Number of levels in the modulus chain [default=heuristic]
 	long c = 3;                   // Number of columns in key-switching matrix [default=2]
 	long w = 64;                  // Hamming weight of secret key
 	long d = 1;                   // Degree of the field extension [default=1]
@@ -101,27 +101,27 @@ int main()
     result.resize(num);
     PrintVector(result);
 
-    result.resize(ea.size());
-    Timer timer2;
-    timer2.start();
-    Ctxt enc = cb.Multiply(encV1, encV2);
-    timer2.stop();
-    std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
-    ea.decrypt(enc, secretKey, result);
-    cout << "ok" << endl; 
-    result.resize(num);
-    PrintVector(result);
+    // result.resize(ea.size());
+    // Timer timer2;
+    // timer2.start();
+    // Ctxt enc = cb.Multiply(encV1, encV2);
+    // timer2.stop();
+    // std::cout << "Time taken: " << timer2.elapsed_time() << std::endl;
+    // ea.decrypt(enc, secretKey, result);
+    // cout << "ok" << endl; 
+    // result.resize(num);
+    // PrintVector(result);
 
 
-    result.resize(ea.size());
-    Timer timer4;
-    timer4.start();
-    enc = cb.Multiply2(encV1, encV2);
-    timer4.stop();
-    std::cout << "Time taken: " << timer4.elapsed_time() << std::endl;
-    ea.decrypt(enc, secretKey, result);
-    result.resize(num);
-    PrintVector(result);
+    // result.resize(ea.size());
+    // Timer timer4;
+    // timer4.start();
+    // Ctxt enc = cb.Multiply2(encV1, encV2, secretKey);
+    // timer4.stop();
+    // std::cout << "Time taken: " << timer4.elapsed_time() << std::endl;
+    // ea.decrypt(enc, secretKey, result);
+    // result.resize(num);
+    // PrintVector(result);
 
     result.resize(ea.size());
     Ctxt remainder(publicKey), quotient(publicKey);
